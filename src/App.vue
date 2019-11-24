@@ -3,7 +3,7 @@
     <nav class="navbar is-white topNav">
       <div class="container">
         <div class="navbar-brand">
-          <h1>Activity Planner</h1>
+          <h1>{{ appFullName }}</h1>
         </div>
       </div>
     </nav>
@@ -37,9 +37,21 @@
                   <textarea v-model="newActivity.notes" class="textarea" placeholder="Write some notes here"></textarea>
                 </div>
               </div>
+              <div class="field">
+                <select v-model="newActivity.category" class="select">
+                  <option disabled value="">Please select a category</option>
+                  <option
+                    v-for="category in categories"
+                    :key="category.text"
+                  >
+                    {{ category.text }}
+                  </option>
+                </select>
+
+              </div>
               <div class="field is-grouped">
                 <div class="control">
-                  <button @click="createActivity" class="button is-link">Create Activity</button>
+                  <button @click="createActivity" :disabled="!isFormValid" class="button is-link">Create Activity</button>
                 </div>
                 <div class="control">
                   <button class="button is-text" @click="toggleFormDisplay">Cancel</button>
@@ -50,9 +62,13 @@
         </div>
         <div class="column is-9">
           <div class="box content">
-            <ActivityItem v-for="activity in activities"
-                           :activity="activity"
-                           :key="activity.id"></ActivityItem>
+            <ActivityItem
+              v-for="activity in activities"
+              :activity="activity"
+              :key="activity.id">
+            </ActivityItem>
+            <div class="activity-length">{{ activityStatus }}</div>
+            <div class="activity-motivation">{{ activityMotivation }}</div>
           </div>
         </div>
       </div>
@@ -62,60 +78,68 @@
 
 <script>
 import ActivityItem from './components/ActivityItem'
+import { fetchActivities, fetchCategories, fetchUser} from './api';
+
 export default {
   name: 'app',
   components:{ ActivityItem },
   data () {
     return {
       isFormDisplayed: false,
-      message: 'Hello Vue!',
-      titleMessage: 'Title Message Here',
-      isTextDisplayed: true,
+      appName: 'Activity Planner',
+      appAuthor: 'Francis Baz',
       newActivity: {
         title: '',
-        notes: ''
+        notes: '',
+        category: '',
       },
       items: {1: {name: 'Francis'}, 2: {name: 'Ifeoma'}},
-        user: {
-          name: 'Francis Bastieno',
-          id: '-Aj34jknvncx98812',
-        },
-        activities: {
-          '1546968934': {
-            id: '1546968934',
-            title: 'Learn Vue.js',
-            notes: 'I started today and it was not good.',
-            progress: 0,
-            category: '1546969049',
-            createdAt: 1546969144391,
-            updatedAt: 1546969144391
-          },
-          '1546969212': {
-            id: '1546969212',
-            title: 'Read Witcher Books',
-            notes: 'These books are super nice',
-            progress: 0,
-            category: '1546969049',
-            createdAt: 1546969144391,
-            updatedAt: 1546969144391
-          }
-        },
-        categories: {
-          '1546969049': {text: 'books'},
-          '1546969225': {text: 'movies'}
-        }
+      user: {},
+      activities: {},
+      categories: {}
+    }
+  },
+  computed: {
+    isFormValid() {
+      return this.newActivity.title && this.newActivity.notes
+    },
+    appFullName() {
+      return `${this.appName} by ${this.appAuthor}`
+    },
+    activityLength() {
+      return Object.keys(this.activities).length
+    },
+    activityStatus() {
+      if (this.activityLength === 0) {
+        return 'You have no activity'
+      } else if (this.activityLength === 1) {
+        return `You have ${this.activityLength} activity`
+      } else {
+        return `You have ${this.activityLength} activities`
+      }
+    },
+    activityMotivation() {
+      if (this.activityLength && this.activityLength < 5) {
+        return 'Nice to see some activity'
+      } else if (this.activityLength >= 5) {
+        return 'So many activities! Good Job!'
+      } else {
+        return 'No activity. So sad'
+      }
     }
   },
   methods: {
-    toggleTextDisplay () {
-      this.isTextDisplayed = !this.isTextDisplayed
-    },
-    toggleFormDisplay () {
+    toggleFormDisplay() {
       this.isFormDisplayed = !this.isFormDisplayed
     },
-    createActivity () {
+    createActivity() {
       console.log(this.newActivity)
     }
+  },
+  created() {
+    this.activities = fetchActivities()
+    this.categories = fetchCategories()
+    this.user = fetchUser()
   }
 }
 </script>
@@ -135,6 +159,14 @@ html, body {
 
 footer {
   background: #F2F6FA !important;
+}
+
+.activity-motivation {
+  float: right;
+}
+
+.activity-length {
+  display: inline-block;
 }
 
 .topNav {
@@ -173,7 +205,7 @@ aside.menu .menu-label {
   font-weight: 700;
   font-size: 14px;
   height: 3rem;
-  line-height: 2.8; 
+  line-height: 2.8;
 }
 
 .media-left img {
