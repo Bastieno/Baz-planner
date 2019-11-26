@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="media-right">
-        <span>Progress Bar Here</span>
+        <span>Progress: <span :class="assignProgressColor"> {{ activity.progress}} %</span></span>
       </div>
     </div>
   </article>
@@ -23,10 +23,39 @@
 
 <script>
 export default {
-  props: ['activity']
+  props: {
+    activity: {
+      type: Object,
+      required: true
+    }
+  },
+  computed: {
+    assignProgressColor() {
+      const { progress } = this.activity
+      debugger
+      if (progress <= 0) {
+        return {'color-red': true}
+      } else if (progress <= 50) {
+        return {'color-orange': true}
+      } else {
+        return {'color-green': true}
+      }
+    }
+  }
 }
 </script>
 
 <style>
+.color-red {
+  color: red
+}
+
+.color-orange {
+  color: orange
+}
+
+.color-green {
+  color: green
+}
 
 </style>
