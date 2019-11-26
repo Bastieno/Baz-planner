@@ -1,5 +1,5 @@
 <template>
-  <div id="activityApp">
+  <div v-if="isDataLoaded" id="activityApp">
     <NavBar />
     <section class="container">
       <div class="columns">
@@ -50,10 +50,14 @@ export default {
       isFetching: false,
       error: null,
       user: {},
-      activities: {},
+      activities: null,
+      categories: null
     }
   },
   computed: {
+    isDataLoaded() {
+      return this.activities && this.categories
+    },
     activityLength() {
       return Object.keys(this.activities).length
     },
@@ -87,7 +91,10 @@ export default {
         this.error = error
         this.isFetching = false
       })
-    this.categories = fetchCategories()
+
+    fetchCategories()
+      .then(categories => this.categories = categories)
+      
     this.user = fetchUser()
   },
   methods: {
