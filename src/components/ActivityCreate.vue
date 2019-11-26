@@ -23,6 +23,7 @@
                   <option
                     v-for="category in categories"
                     :key="category.text"
+                    :value="category.id"
                   >
                     {{ category.text }}
                   </option>

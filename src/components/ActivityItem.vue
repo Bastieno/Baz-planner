@@ -1,6 +1,8 @@
 <template>
   <article class="post">
     <h4>{{activity.title}}</h4>
+    <p>{{capitalize(categories[activity.category].text)}}</p>
+    <p>{{activity.notes}}</p>
     <div class="media">
       <div class="media-left">
         <p class="image is-32x32">
@@ -10,7 +12,7 @@
       <div class="media-content">
         <div class="content">
           <p>
-            <a href="#">Francis Bax</a> updated {{activity.updatedAt}} minutes ago &nbsp;
+            <a href="#">Francis Bax</a> updated {{activity.updatedAt | formatTime }} &nbsp;
           </p>
         </div>
       </div>
@@ -22,17 +24,22 @@
 </template>
 
 <script>
+import textUtility from '../mixins'
 export default {
   props: {
     activity: {
       type: Object,
       required: true
+    },
+    categories: {
+      type: Object,
+      required: true
     }
   },
+  mixins: [textUtility],
   computed: {
     assignProgressColor() {
       const { progress } = this.activity
-      debugger
       if (progress <= 0) {
         return {'color-red': true}
       } else if (progress <= 50) {
@@ -46,6 +53,11 @@ export default {
 </script>
 
 <style>
+
+.post > h4 {
+  margin-bottom: 5px
+}
+
 .color-red {
   color: red
 }
