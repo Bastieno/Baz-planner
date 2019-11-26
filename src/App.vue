@@ -1,74 +1,30 @@
 <template>
   <div id="activityApp">
-    <nav class="navbar is-white topNav">
-      <div class="container">
-        <div class="navbar-brand">
-          <h1>{{ appFullName }}</h1>
-        </div>
-      </div>
-    </nav>
-    <nav class="navbar is-white">
-      <div class="container">
-        <div class="navbar-menu">
-          <div class="navbar-start">
-            <a class="navbar-item is-active" href="#">Newest</a>
-            <a class="navbar-item" href="#">In Progress</a>
-            <a class="navbar-item" href="#">Finished</a>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <NavBar />
     <section class="container">
       <div class="columns">
         <div class="column is-3">
-          <a v-if="!isFormDisplayed" @click="toggleFormDisplay" class="button is-primary is-block is-alt is-large" href="#">New Activity</a>
-          <div v-if="isFormDisplayed" class="create-form">
-            <h2>Create Activity</h2>
-            <form>
-              <div class="field">
-                <label class="label">Title</label>
-                <div class="control">
-                  <input v-model="newActivity.title" class="input" type="text" placeholder="Read a Book">
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Notes</label>
-                <div class="control">
-                  <textarea v-model="newActivity.notes" class="textarea" placeholder="Write some notes here"></textarea>
-                </div>
-              </div>
-              <div class="field">
-                <select v-model="newActivity.category" class="select">
-                  <option disabled value="">Please select a category</option>
-                  <option
-                    v-for="category in categories"
-                    :key="category.text"
-                  >
-                    {{ category.text }}
-                  </option>
-                </select>
-
-              </div>
-              <div class="field is-grouped">
-                <div class="control">
-                  <button @click="createActivity" :disabled="!isFormValid" class="button is-link">Create Activity</button>
-                </div>
-                <div class="control">
-                  <button class="button is-text" @click="toggleFormDisplay">Cancel</button>
-                </div>
-              </div>
-            </form>
-          </div>
+          <ActivityCreate @activityCreated="addActivity" :categories="categories" />
         </div>
         <div class="column is-9">
-          <div class="box content">
-            <ActivityItem
-              v-for="activity in activities"
-              :activity="activity"
-              :key="activity.id">
-            </ActivityItem>
-            <div class="activity-length">{{ activityStatus }}</div>
-            <div class="activity-motivation">{{ activityMotivation }}</div>
+          <div class="box content" :class="{fetching: isFetching, 'has-error': error}">
+            <div v-if="error">
+              {{error}}
+            </div>
+            <div v-else>
+              <div v-if="isFetching">
+                Loading...
+              </div>
+              <ActivityItem
+                v-for="activity in activities"
+                :key="activity.id"
+                :activity="activity"
+              />
+            </div>
+            <div v-if="!isFetching && !error">
+              <div class="activity-length">{{ activityStatus }}</div>
+              <div class="activity-motivation">{{ activityMotivation }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -77,35 +33,26 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import ActivityItem from './components/ActivityItem'
+import ActivityCreate from './components/ActivityCreate'
+import NavBar from './components/NavBar';
+
 import { fetchActivities, fetchCategories, fetchUser} from './api';
 
 export default {
   name: 'app',
-  components:{ ActivityItem },
+  components:{ ActivityItem, ActivityCreate, NavBar },
   data () {
     return {
       isFormDisplayed: false,
-      appName: 'Activity Planner',
-      appAuthor: 'Francis Baz',
-      newActivity: {
-        title: '',
-        notes: '',
-        category: '',
-      },
-      items: {1: {name: 'Francis'}, 2: {name: 'Ifeoma'}},
+      isFetching: false,
+      error: null,
       user: {},
       activities: {},
-      categories: {}
     }
   },
   computed: {
-    isFormValid() {
-      return this.newActivity.title && this.newActivity.notes
-    },
-    appFullName() {
-      return `${this.appName} by ${this.appAuthor}`
-    },
     activityLength() {
       return Object.keys(this.activities).length
     },
@@ -128,19 +75,27 @@ export default {
       }
     }
   },
-  methods: {
-    toggleFormDisplay() {
-      this.isFormDisplayed = !this.isFormDisplayed
-    },
-    createActivity() {
-      console.log(this.newActivity)
-    }
-  },
   created() {
-    this.activities = fetchActivities()
+    this.isFetching = true
+    fetchActivities()
+      .then(activities => {
+        this.activities = activities
+        this.isFetching = false
+      })
+      .catch(error => {
+        this.error = error
+        this.isFetching = false
+      })
     this.categories = fetchCategories()
     this.user = fetchUser()
-  }
+  },
+  methods: {
+    addActivity(newActivity) {
+      const { id } = newActivity
+      Vue.set(this.activities, id, newActivity)
+
+    }
+  },
 }
 </script>
 
@@ -159,6 +114,14 @@ html, body {
 
 footer {
   background: #F2F6FA !important;
+}
+
+.fetching {
+  border: 2px solid orange
+}
+
+.has-error {
+  border: 2px solid red
 }
 
 .activity-motivation {
