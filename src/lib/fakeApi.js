@@ -51,6 +51,13 @@ class fakeApi {
       resolve(payload)
     })
   }
+
+  delete(resource, payload) {
+    return new Promise((resolve, reject) => {
+      data[resource][payload.id]
+      resolve(payload)
+    })
+  }
 }
 
 export default new fakeApi()

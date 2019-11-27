@@ -1,6 +1,9 @@
 <template>
   <article class="post">
-    <h4>{{activity.title}}</h4>
+    <div class="activity-title-wrapper">
+      <h4 class="activity-title">{{ activity.title }}</h4>
+      <i @click="toggleActionButtons" class="fa fa-cog activity-settings" />
+    </div>
     <p>{{capitalize(categories[activity.category].text)}}</p>
     <p>{{activity.notes}}</p>
     <div class="media">
@@ -17,8 +20,12 @@
         </div>
       </div>
       <div class="media-right">
-        <span>Progress: <span :class="assignProgressColor"> {{ activity.progress}} %</span></span>
+        <span>Progress: <span :style="{ color: assignProgressColor }"> {{ activity.progress}} %</span></span>
       </div>
+    </div>
+    <div class="activity-control" v-show="isDisplayed">
+      <a href="" class="button is-warning">Edit</a>
+      <a @click.prevent="deleteActivity(activity)" href="" class="button is-danger">Delete</a>
     </div>
   </article>
 </template>
@@ -36,38 +43,60 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      isDisplayed: false
+    }
+  },
   mixins: [textUtility],
+  methods: {
+    toggleActionButtons() {
+      this.isDisplayed = !this.isDisplayed
+    },
+    deleteActivity(activity) {
+      this.$emit('activityDeleted', activity)
+    }
+  },
   computed: {
     assignProgressColor() {
       const { progress } = this.activity
       if (progress <= 0) {
-        return {'color-red': true}
+        return 'red'
       } else if (progress <= 50) {
-        return {'color-orange': true}
+        return 'orange'
       } else {
-        return {'color-green': true}
+        return 'green'
       }
     }
   }
 }
 </script>
 
-<style>
-
+<style lang="scss" scoped>
 .post > h4 {
   margin-bottom: 5px
 }
 
-.color-red {
-  color: red
+.activity-title {
+  margin-bottom: 5px;
+  display: inline-block
 }
 
-.color-orange {
-  color: orange
+.activity-settings {
+  float: right;
+  font-size: 22px;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 
-.color-green {
-  color: green
+.activity-control {
+  margin: 20px 0 0 0;
+
+  a {
+  margin-right: 5px;
+  }
 }
 
 </style>

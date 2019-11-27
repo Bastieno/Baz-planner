@@ -24,5 +24,9 @@ export const createNewActivity = (activity) => {
     return fakeApi.post('activities', { ...activity })
 }
 
+export const deleteActivity = (activity) => {
+  return fakeApi.delete('activities', activity)
+}
+
 
 
