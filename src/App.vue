@@ -1,6 +1,6 @@
 <template>
   <div id="activityApp">
-    <NavBar />
+    <NavBar @emittedFilter="setFilterValue" />
     <section class="container">
       <div class="columns">
         <div class="column is-3">
@@ -17,7 +17,7 @@
               </div>
               <div v-if="isDataLoaded">
                 <ActivityItem
-                  v-for="activity in activities"
+                  v-for="activity in filterActivities"
                   :key="activity.id"
                   :activity="activity"
                   :categories="categories"
@@ -53,7 +53,8 @@ export default {
       error: null,
       user: {},
       activities,
-      categories
+      categories,
+      filterValue: 'all'
     }
   },
   computed: {
@@ -86,6 +87,25 @@ export default {
       } else {
         return 'No activity. So sad'
       }
+    },
+    filterActivities() {
+     switch (this.filterValue) {
+       case 'all':
+         return this.activities
+        case 'inProgress':
+          return Object.values(this.activities).filter(activity => activity.progress > 0 && activity.progress < 100)
+        case 'finished':
+          return Object.values(this.activities).filter(activity => activity.progress == 100)
+        case 'notStarted':
+          return Object.values(this.activities).filter(activity => activity.progress == 0)
+       default:
+         return this.activities;
+     }
+    }
+  },
+  methods: {
+    setFilterValue(filterOption) {
+      this.filterValue = filterOption
     }
   },
   created() {
@@ -104,8 +124,6 @@ export default {
     store.fetchCategories().then(categories => {})
 
     this.user = store.fetchUser()
-  },
-  methods: {
   },
 }
 </script>

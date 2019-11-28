@@ -9,11 +9,12 @@
     </nav>
     <nav class="navbar is-white">
       <div class="container">
-        <div class="navbar-menu">
+        <div class="navbar-menu is-active">
           <div class="navbar-start">
-            <a class="navbar-item is-active" href="#">Newest</a>
-            <a class="navbar-item" href="#">In Progress</a>
-            <a class="navbar-item" href="#">Finished</a>
+            <a class="navbar-item" :class="{'is-active': filterOption === 'all'}" @click="emitFilter('all')">All</a>
+            <a class="navbar-item" :class="{'is-active': filterOption === 'inProgress'}" @click="emitFilter('inProgress')">In Progress</a>
+            <a class="navbar-item" :class="{'is-active': filterOption === 'finished'}" @click="emitFilter('finished')">Finished</a>
+            <a class="navbar-item" :class="{'is-active': filterOption === 'notStarted'}" @click="emitFilter('notStarted')">Not Started</a>
           </div>
         </div>
       </div>
@@ -27,12 +28,19 @@ export default {
     return {
       appName: 'Activity Planner',
       appAuthor: 'Francis Baz',
+      filterOption: 'all'
     }
   },
   computed: {
     appFullName() {
       return `${this.appName} by ${this.appAuthor}`
     },
+  },
+  methods: {
+    emitFilter(filterOption) {
+      this.filterOption = filterOption
+      this.$emit('emittedFilter', filterOption)
+    }
   }
 }
 </script>
