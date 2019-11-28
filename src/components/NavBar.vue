@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       appName: 'Activity Planner',
-      appAuthor: 'Francis Baz',
+      appAuthor: 'Bastieno',
       filterOption: 'all'
     }
   },
@@ -44,7 +44,3 @@ export default {
   }
 }
 </script>
-
-<style>
-
-</style>

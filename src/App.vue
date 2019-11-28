@@ -9,7 +9,7 @@
         <div class="column is-9">
           <div class="box content" :class="{fetching: isFetching, 'has-error': error}">
             <div v-if="error">
-              {{error}}
+              {{ error }}
             </div>
             <div v-else>
               <div v-if="isFetching">
@@ -43,7 +43,7 @@ import NavBar from './components/NavBar';
 import store from './store'
 
 export default {
-  name: 'app',
+  name: 'App',
   components:{ ActivityItem, ActivityCreate, NavBar },
   data () {
     const { state: { activities, categories } } = store
@@ -103,11 +103,6 @@ export default {
      }
     }
   },
-  methods: {
-    setFilterValue(filterOption) {
-      this.filterValue = filterOption
-    }
-  },
   created() {
     // Run this only once to populate the db
     // fakeApi.seedLocalStorage()
@@ -124,6 +119,11 @@ export default {
     store.fetchCategories().then(categories => {})
 
     this.user = store.fetchUser()
+  },
+  methods: {
+    setFilterValue(filterOption) {
+      this.filterValue = filterOption
+    }
   },
 }
 </script>

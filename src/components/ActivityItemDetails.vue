@@ -2,10 +2,10 @@
   <article class="post">
     <div class="activity-title-wrapper">
       <h4 class="activity-title">{{ activity.title }}</h4>
-      <i @click="toggleActionButtons" class="fa fa-cog activity-settings" />
+      <i class="fa fa-cog activity-settings" @click="toggleActionButtons" />
     </div>
-    <p>{{capitalize(categories[activity.category].text)}}</p>
-    <p>{{activity.notes}}</p>
+    <p>{{ capitalize(categories[activity.category].text) }}</p>
+    <p>{{ activity.notes }}</p>
     <div class="media">
       <div class="media-left">
         <p class="image is-32x32">
@@ -15,17 +15,17 @@
       <div class="media-content">
         <div class="content">
           <p>
-            <a href="#">Francis Bax</a> updated {{activity.updatedAt | formatTime }} &nbsp;
+            <a href="#">Francis Bax</a> updated {{ activity.updatedAt | formatTime }} &nbsp;
           </p>
         </div>
       </div>
       <div class="media-right">
-        <span>Progress: <span :style="{ color: assignProgressColor }"> {{ activity.progress}} %</span></span>
+        <span>Progress: <span :style="{ color: assignProgressColor }"> {{ activity.progress }} %</span></span>
       </div>
     </div>
-    <div class="activity-control" v-show="isDisplayed">
-      <a href="" @click.prevent="$emit('toggleUpdate', true)" class="button is-warning">Edit</a>
-      <a @click.prevent="deleteActivity(activity)" href="" class="button is-danger">Delete</a>
+    <div v-show="isDisplayed" class="activity-control">
+      <a href="" class="button is-warning" @click.prevent="$emit('toggleUpdate', true)">Edit</a>
+      <a href="" class="button is-danger" @click.prevent="deleteActivity(activity)">Delete</a>
     </div>
   </article>
 </template>
@@ -35,6 +35,7 @@ import textUtility from '../mixins'
 import store from '../store'
 
 export default {
+  mixins: [textUtility],
   props: {
     activity: {
       type: Object,
@@ -50,15 +51,6 @@ export default {
       isDisplayed: false
     }
   },
-  mixins: [textUtility],
-  methods: {
-    toggleActionButtons() {
-      this.isDisplayed = !this.isDisplayed
-    },
-    deleteActivity(activity) {
-      store.deleteActivity({...activity})
-    }
-  },
   computed: {
     assignProgressColor() {
       const { progress } = this.activity
@@ -69,6 +61,14 @@ export default {
       } else {
         return 'green'
       }
+    }
+  },
+  methods: {
+    toggleActionButtons() {
+      this.isDisplayed = !this.isDisplayed
+    },
+    deleteActivity(activity) {
+      store.deleteActivity({...activity})
     }
   }
 }
