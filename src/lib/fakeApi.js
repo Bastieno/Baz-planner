@@ -26,9 +26,21 @@ const data = {
 }
 
 class fakeApi {
+  seedLocalStorage() {
+    this.commitData(data)
+  }
+
+  commitData(data) {
+    localStorage.setItem('activity-data', JSON.stringify(data) )
+  }
+
+  getData() {
+    const data = localStorage.getItem('activity-data')
+    return JSON.parse(data)
+  }
+
   canContinue() {
     const randomNumber = Math.floor(Math.random() * 10)
-    console.log('randomNumber', randomNumber)
     if (randomNumber > 5) return true
     return false
   }
@@ -37,6 +49,7 @@ class fakeApi {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (force || this.canContinue()) {
+          const data = this.getData()
           resolve({...data[resource]})
         } else {
           reject(`Cannot fetch ${resource} as of this time.`)
@@ -47,21 +60,18 @@ class fakeApi {
 
   post(resource, payload) {
     return new Promise((resolve, reject) => {
+      const data = this.getData()
       data[resource][payload.id] = payload
+      this.commitData(data)
       resolve(payload)
     })
   }
 
   delete(resource, payload) {
     return new Promise((resolve, reject) => {
-      data[resource][payload.id]
-      resolve(payload)
-    })
-  }
-
-  update(resource, payload) {
-    return new Promise((resolve, reject) => {
-      data[resource][payload.id] = payload
+      const data = this.getData()
+      delete data[resource][payload.id]
+      this.commitData(data)
       resolve(payload)
     })
   }

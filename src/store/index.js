@@ -57,7 +57,7 @@ const store = {
 
   updateActivity(activity) {
     activity.updatedAt = new Date()
-    return fakeApi.update('activities', activity)
+    return fakeApi.post('activities', activity)
       .then(updatedActivity => {
         this.setItem('activities', updatedActivity.id, updatedActivity)
         return updatedActivity

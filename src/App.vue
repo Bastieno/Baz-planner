@@ -42,8 +42,6 @@ import ActivityCreate from './components/ActivityCreate'
 import NavBar from './components/NavBar';
 import store from './store'
 
-// import { fetchActivities, fetchCategories, fetchUser, deleteActivityApi, updateActivityApi } from './api';
-
 export default {
   name: 'app',
   components:{ ActivityItem, ActivityCreate, NavBar },
@@ -91,6 +89,8 @@ export default {
     }
   },
   created() {
+    // Run this only once to populate the db
+    // fakeApi.seedLocalStorage()
     this.isFetching = true
     store.fetchActivities()
       .then(activities => {

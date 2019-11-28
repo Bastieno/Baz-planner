@@ -78,7 +78,6 @@ export default {
     updateActivity(activity) {
       store.updateActivity(activity)
         .then(updatedItem => {
-          console.log(updatedItem)
           this.$emit('toggleUpdate', false )
         })
     }
