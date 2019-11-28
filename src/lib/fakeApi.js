@@ -58,6 +58,13 @@ class fakeApi {
       resolve(payload)
     })
   }
+
+  update(resource, payload) {
+    return new Promise((resolve, reject) => {
+      data[resource][payload.id] = payload
+      resolve(payload)
+    })
+  }
 }
 
 export default new fakeApi()

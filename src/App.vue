@@ -1,10 +1,10 @@
 <template>
-  <div v-if="isDataLoaded" id="activityApp">
+  <div id="activityApp">
     <NavBar />
     <section class="container">
       <div class="columns">
         <div class="column is-3">
-          <ActivityCreate @activityCreated="addActivity" :categories="categories" />
+          <ActivityCreate :categories="categories" />
         </div>
         <div class="column is-9">
           <div class="box content" :class="{fetching: isFetching, 'has-error': error}">
@@ -15,13 +15,14 @@
               <div v-if="isFetching">
                 Loading...
               </div>
-              <ActivityItem
-                v-for="activity in activities"
-                :key="activity.id"
-                :activity="activity"
-                :categories="categories"
-                @activityDeleted="handleActivityDelete"
-              />
+              <div v-if="isDataLoaded">
+                <ActivityItem
+                  v-for="activity in activities"
+                  :key="activity.id"
+                  :activity="activity"
+                  :categories="categories"
+                />
+              </div>
             </div>
             <div v-if="!isFetching && !error">
               <div class="activity-length">{{ activityStatus }}</div>
@@ -39,25 +40,33 @@ import Vue from 'vue'
 import ActivityItem from './components/ActivityItem'
 import ActivityCreate from './components/ActivityCreate'
 import NavBar from './components/NavBar';
+import store from './store'
 
-import { fetchActivities, fetchCategories, fetchUser, deleteActivity } from './api';
+// import { fetchActivities, fetchCategories, fetchUser, deleteActivityApi, updateActivityApi } from './api';
 
 export default {
   name: 'app',
   components:{ ActivityItem, ActivityCreate, NavBar },
   data () {
+    const { state: { activities, categories } } = store
     return {
       isFormDisplayed: false,
       isFetching: false,
       error: null,
       user: {},
-      activities: null,
-      categories: null
+      activities,
+      categories
     }
   },
   computed: {
+    activitiesLength() {
+      return Object.keys(this.activities).length
+    },
+    categoriesLength() {
+      return Object.keys(this.categories).length
+    },
     isDataLoaded() {
-      return this.activities && this.categories
+      return this.activitiesLength && this.categoriesLength
     },
     activityLength() {
       return Object.keys(this.activities).length
@@ -83,9 +92,8 @@ export default {
   },
   created() {
     this.isFetching = true
-    fetchActivities()
+    store.fetchActivities()
       .then(activities => {
-        this.activities = activities
         this.isFetching = false
       })
       .catch(error => {
@@ -93,22 +101,11 @@ export default {
         this.isFetching = false
       })
 
-    fetchCategories()
-      .then(categories => this.categories = categories)
+    store.fetchCategories().then(categories => {})
 
-    this.user = fetchUser()
+    this.user = store.fetchUser()
   },
   methods: {
-    addActivity(newActivity) {
-      const { id } = newActivity
-      Vue.set(this.activities, id, newActivity)
-    },
-    handleActivityDelete(activity) {
-      deleteActivity(activity)
-        .then(deletedActivity => {
-          Vue.delete(this.activities, deletedActivity.id)
-        })
-    }
   },
 }
 </script>
