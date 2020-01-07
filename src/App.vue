@@ -39,8 +39,9 @@
 import Vue from 'vue'
 import ActivityItem from './components/ActivityItem'
 import ActivityCreate from './components/ActivityCreate'
-import NavBar from './components/NavBar';
+import NavBar from './components/NavBar'
 import store from './store'
+import fakeApi from './lib/fakeApi'
 
 export default {
   name: 'App',
@@ -104,8 +105,10 @@ export default {
     }
   },
   created() {
-    // Run this only once to populate the db
-    // fakeApi.seedLocalStorage()
+    if (!localStorage.getItem('activity-data')) {
+      fakeApi.seedLocalStorage()
+    }
+
     this.isFetching = true
     store.fetchActivities()
       .then(activities => {

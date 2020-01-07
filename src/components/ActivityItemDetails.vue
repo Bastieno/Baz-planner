@@ -27,6 +27,7 @@
       <a href="" class="button is-warning" @click.prevent="$emit('toggleUpdate', true)">Edit</a>
       <a href="" class="button is-danger" @click.prevent="deleteActivity(activity)">Delete</a>
     </div>
+    <hr class="divider">
   </article>
 </template>
 
@@ -99,6 +100,11 @@ export default {
   a {
   margin-right: 5px;
   }
+}
+
+hr.divider {
+  margin: 32px 0px;
+  border: 1px solid #ccc;
 }
 
 </style>

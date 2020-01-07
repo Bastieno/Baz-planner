@@ -32,7 +32,7 @@
         </div>
         <div class="field is-grouped">
           <div class="control">
-            <button :disabled="!isFormValid" class="button is-link" @click.prevent="createActivity">Create Activity</button>
+            <button :disabled="!isFormValid" class="button is-link" @click.prevent="createActivity">Create</button>
           </div>
           <div class="control">
             <button class="button is-danger" @click="toggleFormDisplay">Cancel</button>
